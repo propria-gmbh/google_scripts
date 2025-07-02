@@ -10,3 +10,11 @@ function logToSheet(label, content) {
   const timestamp = new Date();
   logSheet.appendRow([timestamp, label, content]);
 }
+
+function getLastProcessedRow() {
+  return parseInt(PropertiesService.getScriptProperties().getProperty("lastProcessedRow") || "1", 10);
+}
+
+function setLastProcessedRow(row) {
+  PropertiesService.getScriptProperties().setProperty("lastProcessedRow", row.toString());
+}
