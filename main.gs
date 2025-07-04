@@ -133,8 +133,6 @@ function processAllProducts(limit = 6) {
       }
 
       logToSheet("✅ Product processed", `Rows ${startRow + 1}–${endRow}`);
-      SpreadsheetApp.getUi().alert(`✅ Block processed (rows ${startRow + 1}–${endRow})`);
-
     } else {
       logToSheet("❌ GPT error", `Row ${startRow + 1}: "${title}"`);
     }
@@ -148,7 +146,12 @@ function processAllProducts(limit = 6) {
     logToSheet("✅ Done", "Reached end of sheet");
     PropertiesService.getScriptProperties().deleteProperty("lastProcessedRow");
   }
+
+  if (processed > 0) {
+    SpreadsheetApp.getUi().alert(`✅ Processed ${processed} blocks`);
+  }
 }
+
 
 
 
@@ -229,6 +232,18 @@ You must not reuse or copy anything from this listing directly — rephrase and 
 🚫 FORBIDDEN MATERIALS:
 Linen, Cashmere, Cotton, Wool, Polyester, Spandex, Leather, Faux, Viscose, Silk, Denim, Fur,
 Nylon, Acetate, EVA, Fleece, Tweed, Sherpa, Lace, Satin, Velvet, Rayon, Teddy
+
+🚫 FORBIDDEN MEDICAL TERMS:
+Orthopedic, Anatomical, Therapeutic, Corrective — and all equivalents in other languages, including:
+Orthopedic, Anatomical, Therapeutic, Corrective (EN)
+Ortopedico, Anatomico, Terapeutico (IT)
+Orthopädisch, Anatomisch, Therapeutisch (DE)
+Orthopédique, Anatomique, Thérapeutique (FR)
+Ortopædisk, Anatomi, Terapeutisk (DA)
+Ortopedisk, Anatomisk, Terapeutisk (SV)
+
+Such terms must NEVER appear in the title or description — even if found in competitor copy, source text, or image analysis. Focus on comfort, fit, and support only — without any medical claims.
+
 
 🚫 FORBIDDEN BRAND NAMES:
 Coco, Chanel, Celine, Elara, Zara, Ami, Brioni, Chloé, Kenzo, Santoni, Tod, Vince, Zilli, Calvin
