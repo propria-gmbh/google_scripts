@@ -133,8 +133,6 @@ function processAllProducts(limit = 6) {
       }
 
       logToSheet("✅ Product processed", `Rows ${startRow + 1}–${endRow}`);
-      SpreadsheetApp.getUi().alert(`✅ Block processed (rows ${startRow + 1}–${endRow})`);
-
     } else {
       logToSheet("❌ GPT error", `Row ${startRow + 1}: "${title}"`);
     }
@@ -148,7 +146,12 @@ function processAllProducts(limit = 6) {
     logToSheet("✅ Done", "Reached end of sheet");
     PropertiesService.getScriptProperties().deleteProperty("lastProcessedRow");
   }
+
+  if (processed > 0) {
+    SpreadsheetApp.getUi().alert(`✅ Processed ${processed} blocks`);
+  }
 }
+
 
 
 
