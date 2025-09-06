@@ -24,32 +24,44 @@ function updateSmiirlFromShops() {
       return;
     }
 
-    const apiUrl = `https://${shopUrl}/admin/api/2024-04/orders/count.json?status=any`;
-    Logger.log("Запрос к: " + apiUrl);
+    const totalUrl = `https://${shopUrl}/admin/api/2024-04/orders/count.json?status=any`;
+    const cancelledUrl = `https://${shopUrl}/admin/api/2024-04/orders/count.json?status=cancelled`;
+    Logger.log("Запрос к (все): " + totalUrl);
+    Logger.log("Запрос к (отмененные): " + cancelledUrl);
 
     try {
-      const response = UrlFetchApp.fetch(apiUrl, {
+      const totalResponse = UrlFetchApp.fetch(totalUrl, {
+        method: 'get',
+        headers: { 'X-Shopify-Access-Token': token },
+        muteHttpExceptions: true
+      });
+      const cancelledResponse = UrlFetchApp.fetch(cancelledUrl, {
         method: 'get',
         headers: { 'X-Shopify-Access-Token': token },
         muteHttpExceptions: true
       });
 
-      const raw = response.getContentText();
-      Logger.log(`Ответ от ${shopUrl}: ${raw}`);
+      const totalRaw = totalResponse.getContentText();
+      const cancelledRaw = cancelledResponse.getContentText();
+      Logger.log(`Ответ (все) от ${shopUrl}: ${totalRaw}`);
+      Logger.log(`Ответ (отмененные) от ${shopUrl}: ${cancelledRaw}`);
 
-      let result;
+      let totalResult;
+      let cancelledResult;
       try {
-        result = JSON.parse(raw);
+        totalResult = JSON.parse(totalRaw);
+        cancelledResult = JSON.parse(cancelledRaw);
       } catch (jsonErr) {
         errors.push(`${shopUrl}: ошибка парсинга JSON`);
         return;
       }
 
-      if (result && result.count !== undefined) {
-        Logger.log(`${shopUrl} → ${result.count}`);
-        totalCount += result.count;
+      if (totalResult && totalResult.count !== undefined && cancelledResult && cancelledResult.count !== undefined) {
+        const nonCancelled = Math.max(0, Number(totalResult.count) - Number(cancelledResult.count));
+        Logger.log(`${shopUrl} → всего: ${totalResult.count}, отмененные: ${cancelledResult.count}, неотмененные: ${nonCancelled}`);
+        totalCount += nonCancelled;
       } else {
-        errors.push(`${shopUrl}: нет поля count`);
+        errors.push(`${shopUrl}: нет поля count в одном из ответов`);
       }
     } catch (e) {
       errors.push(`${shopUrl}: ${e.toString()}`);
